@@ -32,7 +32,8 @@ body {
   min-height: 100dvh;
   background: var(--color-page);
   color: var(--color-ink);
-  font-family: var(--font-sans);
+  /* Written out in full: `@theme inline` does not create a --font-sans variable to read here. */
+  font-family: var(--font-inter), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
