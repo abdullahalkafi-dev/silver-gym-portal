@@ -1,37 +1,54 @@
 @import "tailwindcss";
 
+/* Colors are the same as the Silver GYM dashboard (orange brand color + its focus glow). */
 @theme inline {
-  --font-sans: var(--font-geist-sans), "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  --color-purple: #7738f8;
-  --color-purple-dark: #6527e0;
-  --color-purple-soft: #f2eeff;
+  --color-primary-50: #fef5f3;
+  --color-primary-100: #fde9e4;
+  --color-primary-200: #fbd0c8;
+  --color-primary-300: #f7ae9f;
+  --color-primary-400: #f17e6a;
+  --color-primary-500: #e16349;
+  --color-primary-600: #c94a32;
+  --color-primary-700: #a83c28;
+  --color-primary-800: #8b3424;
+  --color-primary-900: #742f23;
+  --color-primary: #e16349;
+
+  --color-focus: #f05b23;
+  --color-focus-ring: #fcf0ed;
+
   --color-ink: #252525;
   --color-muted: #878787;
-  --color-surface: #f9f9f9;
-  --color-line: #ececec;
+  --color-page: #f5f5f5;
 }
 
-html,
-body {
-  min-height: 100%;
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: #f5f5f7;
+  min-height: 100dvh;
+  background: var(--color-page);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* number inputs without spinners */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+/* Dropdown arrow, same look as the dashboard forms. */
+.select-chevron {
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
 }
-input[type="number"] {
-  -moz-appearance: textfield;
+.select-chevron-sm {
+  background-position: right 8px center;
+}
+/* Unselected dropdowns read like placeholders. */
+.select-chevron[data-empty="true"] {
+  color: #9ca3af;
 }
 
 @keyframes fade-up {
@@ -45,5 +62,11 @@ input[type="number"] {
   }
 }
 .fade-up {
-  animation: fade-up 0.35s ease-out both;
+  animation: fade-up 0.3s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-up {
+    animation: none;
+  }
 }

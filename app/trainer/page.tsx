@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Logo, Spinner } from "@/components/ui";
+import { DumbbellIcon, Logo, LogoutIcon, Spinner } from "@/components/ui";
 import { ApiError, api, session } from "@/lib/api";
 import type { TrainerMe } from "@/lib/types";
 
@@ -38,46 +38,43 @@ export default function TrainerPage() {
 
   if (!me) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-purple">
+      <div className="flex min-h-dvh items-center justify-center text-primary">
         <Spinner className="h-6 w-6" />
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen">
-      <header className="border-b border-line bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3.5">
-          <div className="flex items-center gap-3">
+    <main className="min-h-dvh">
+      <header className="border-b border-gray-200 bg-white pt-[env(safe-area-inset-top)]">
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-2.5">
+          <div className="flex min-w-0 items-center gap-3">
             <Logo size={36} />
-            <div className="leading-tight">
+            <div className="min-w-0 leading-tight">
               <p className="text-sm font-semibold">Silver GYM</p>
-              <p className="text-xs text-muted">Trainer portal</p>
+              <p className="truncate text-xs text-muted">{me.branchName || "Trainer portal"}</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="hidden text-sm text-muted sm:block">{me.displayName}</span>
-            <button
-              onClick={signOut}
-              className="rounded-lg border border-line px-3 py-1.5 text-sm font-medium text-ink transition hover:bg-surface"
-            >
-              Sign out
-            </button>
-          </div>
+          <button
+            onClick={signOut}
+            aria-label="Sign out"
+            className="flex h-10 shrink-0 items-center gap-2 rounded-lg border border-gray-200 px-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 active:bg-gray-100"
+          >
+            <LogoutIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">Sign out</span>
+          </button>
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-xl flex-col items-center px-5 py-24 text-center fade-up">
-        <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-purple-soft text-purple">
-          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M6.5 6.5v11M17.5 6.5v11M3 9v6M21 9v6M6.5 12h11" />
-          </svg>
+      <div className="fade-up mx-auto flex max-w-md flex-col items-center px-5 py-16 text-center sm:py-24">
+        <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-primary-50 text-primary">
+          <DumbbellIcon className="h-10 w-10" />
         </div>
         <h1 className="mt-6 text-2xl font-semibold tracking-tight">Welcome, {me.displayName}</h1>
-        <p className="mt-2 text-base font-medium text-purple">The trainer area is under construction</p>
-        <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
-          We are building tools for you to follow your members and share diet and training plans.
-          They will appear here soon.
+        <p className="mt-2 text-base font-medium text-primary">The trainer area is under construction</p>
+        <p className="mt-3 text-sm leading-relaxed text-muted">
+          We are building tools for you to follow your members and share diet and training plans. They will appear
+          here soon.
         </p>
       </div>
     </main>

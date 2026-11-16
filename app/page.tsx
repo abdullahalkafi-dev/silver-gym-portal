@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { PrimaryButton, Logo, inputCls } from "@/components/ui";
+import { Field, Logo, PrimaryButton, fieldCls } from "@/components/ui";
 import { ApiError, api, session, type PortalKind } from "@/lib/api";
 
 type Tab = PortalKind;
@@ -71,59 +71,27 @@ export default function LoginPage() {
   };
 
   if (checking) {
-    return <div className="min-h-screen" />;
+    return <div className="min-h-dvh" />;
   }
 
   return (
-    <main className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
-      {/* Brand panel (desktop) */}
-      <aside className="relative hidden overflow-hidden bg-gradient-to-br from-[#6527e0] via-purple to-[#9b6bff] p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-white/10" />
-        <div className="pointer-events-none absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-white/10" />
-
-        <div className="relative flex items-center gap-3">
-          <Logo size={44} />
-          <span className="text-xl font-semibold tracking-tight">Silver GYM</span>
-        </div>
-
-        <div className="relative max-w-md">
-          <h2 className="text-4xl font-semibold leading-tight tracking-tight">
-            Your membership,
-            <br />
-            always at hand.
-          </h2>
-          <p className="mt-4 text-base text-white/80">
-            Check your payment history, download receipts and keep your profile up to date, from
-            your phone or computer.
-          </p>
-        </div>
-
-        <p className="relative text-sm text-white/60">&copy; {new Date().getFullYear()} Silver GYM</p>
-      </aside>
-
+    <main className="flex min-h-dvh w-full">
       {/* Form */}
-      <section className="flex items-center justify-center px-5 py-10">
-        <div className="fade-up w-full max-w-md">
-          <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <Logo size={40} />
-            <span className="text-lg font-semibold tracking-tight">Silver GYM</span>
+      <section className="flex w-full flex-col justify-center px-5 py-8 pb-[max(2rem,env(safe-area-inset-bottom))] sm:px-10 lg:w-1/2 lg:px-14">
+        <div className="fade-up mx-auto w-full max-w-md">
+          <div className="mb-8 flex items-center gap-3 sm:mb-10">
+            <Logo size={44} />
+            <div className="leading-tight">
+              <p className="text-lg font-semibold tracking-tight">Silver GYM</p>
+              <p className="text-xs text-muted">Member &amp; trainer portal</p>
+            </div>
           </div>
 
-          <h1 className="text-3xl font-semibold tracking-tight text-ink">Welcome back</h1>
-          <p className="mt-1.5 text-sm text-muted">Continue as a member or as a trainer.</p>
+          <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">Welcome back</h1>
+          <p className="mt-2 text-base text-muted">Continue as a member or as a trainer.</p>
 
-          {/* Role switch */}
-          <div
-            role="tablist"
-            aria-label="Sign in as"
-            className="relative mt-7 grid grid-cols-2 rounded-xl bg-[#ececf1] p-1"
-          >
-            <span
-              aria-hidden
-              className={`absolute inset-y-1 w-[calc(50%-4px)] rounded-lg bg-white shadow-sm transition-transform duration-200 ${
-                tab === "member" ? "translate-x-0" : "translate-x-full"
-              }`}
-            />
+          {/* Role switch (same pattern as the dashboard sign-in) */}
+          <div role="tablist" aria-label="Sign in as" className="mt-7 grid grid-cols-2 gap-1 rounded-lg border border-gray-200 bg-white p-1">
             {(["member", "trainer"] as const).map((t) => (
               <button
                 key={t}
@@ -131,8 +99,8 @@ export default function LoginPage() {
                 type="button"
                 aria-selected={tab === t}
                 onClick={() => switchTab(t)}
-                className={`relative z-10 rounded-lg py-2.5 text-sm font-medium transition-colors ${
-                  tab === t ? "text-purple" : "text-muted hover:text-ink"
+                className={`h-11 rounded-md text-sm font-medium transition-colors ${
+                  tab === t ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 {t === "member" ? "Member" : "Trainer"}
@@ -140,92 +108,111 @@ export default function LoginPage() {
             ))}
           </div>
 
-          <form onSubmit={submit} className="mt-6 space-y-4" noValidate>
+          <form onSubmit={submit} className="mt-6 space-y-5" noValidate>
             {tab === "member" ? (
               <>
-                <label className="block">
-                  <span className="mb-1.5 block text-sm font-medium text-ink">Member ID</span>
+                <Field label="Member ID" htmlFor="memberId">
                   <input
-                    className={inputCls}
+                    id="memberId"
+                    className={fieldCls("lg")}
                     value={memberId}
                     onChange={(e) => setMemberId(e.target.value)}
                     placeholder="e.g. 1042"
                     autoComplete="username"
                     inputMode="numeric"
-                    autoFocus
+                    enterKeyHint="next"
                   />
-                </label>
-                <label className="block">
-                  <span className="mb-1.5 block text-sm font-medium text-ink">Phone number</span>
+                </Field>
+                <Field
+                  label="Phone number"
+                  htmlFor="phone"
+                  hint="Use the phone number you gave the gym when you joined."
+                >
                   <input
-                    className={inputCls}
+                    id="phone"
+                    className={fieldCls("lg")}
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="01XXXXXXXXX"
                     autoComplete="tel"
                     inputMode="tel"
+                    enterKeyHint="go"
                   />
-                  <span className="mt-1.5 block text-xs text-muted">
-                    Use the phone number you gave the gym when you joined.
-                  </span>
-                </label>
+                </Field>
               </>
             ) : (
               <>
-                <label className="block">
-                  <span className="mb-1.5 block text-sm font-medium text-ink">Username</span>
+                <Field label="Username" htmlFor="username">
                   <input
-                    className={inputCls}
+                    id="username"
+                    className={fieldCls("lg")}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Your trainer username"
                     autoComplete="username"
                     autoCapitalize="none"
-                    autoFocus
+                    autoCorrect="off"
+                    enterKeyHint="next"
                   />
-                </label>
-                <label className="block">
-                  <span className="mb-1.5 block text-sm font-medium text-ink">Password</span>
+                </Field>
+                <Field label="Password" htmlFor="password">
                   <div className="relative">
                     <input
-                      className={`${inputCls} pr-16`}
+                      id="password"
+                      className={`${fieldCls("lg")} pr-20`}
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Your password"
                       autoComplete="current-password"
+                      enterKeyHint="go"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-purple"
+                      className="absolute inset-y-0 right-0 flex w-20 items-center justify-center text-sm font-medium text-primary"
                     >
                       {showPassword ? "Hide" : "Show"}
                     </button>
                   </div>
-                </label>
+                </Field>
               </>
             )}
 
             {error ? (
-              <div
-                role="alert"
-                className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-600"
-              >
+              <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-3 text-sm text-red-600">
                 {error}
               </div>
             ) : null}
 
-            <PrimaryButton type="submit" loading={loading} className="w-full py-3.5">
+            <PrimaryButton type="submit" size="lg" loading={loading} className="w-full">
               {loading ? "Signing in..." : tab === "member" ? "Continue as member" : "Continue as trainer"}
             </PrimaryButton>
           </form>
 
-          <p className="mt-8 text-center text-xs text-muted">
+          <p className="mt-8 text-center text-sm text-muted">
             Having trouble signing in? Please contact the gym front desk.
           </p>
         </div>
       </section>
+
+      {/* Brand panel (large screens), orange like the dashboard sign-in */}
+      <aside className="relative hidden w-1/2 overflow-hidden bg-primary lg:flex lg:flex-col lg:justify-center lg:px-16">
+        <div className="pointer-events-none absolute -right-20 -top-20 h-[420px] w-[420px] rounded-full bg-[#f89238] blur-[210px]" />
+        <div className="relative z-10 max-w-lg text-white">
+          <h2 className="text-5xl font-bold leading-[1.15] tracking-tight">Your membership, always at hand.</h2>
+          <p className="mt-5 text-lg text-white/90">
+            Check your payment history, download receipts and keep your profile up to date, from your phone or
+            computer.
+          </p>
+          <div className="mt-8 h-px w-64 bg-white" />
+          <ul className="mt-8 space-y-3 text-base text-[#ffded7]">
+            <li>Payment history and receipts</li>
+            <li>Update your details, any time</li>
+            <li>Diet and workout plans, coming soon</li>
+          </ul>
+        </div>
+      </aside>
     </main>
   );
 }

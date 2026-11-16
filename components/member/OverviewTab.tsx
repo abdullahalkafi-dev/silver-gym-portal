@@ -1,4 +1,4 @@
-import { Card, StatusPill } from "@/components/ui";
+import { Card, ChartIcon, DumbbellIcon, FoodIcon, SecondaryButton, StatusPill } from "@/components/ui";
 import { photoUrl } from "@/lib/api";
 import { fmtDate, fmtMoney, initials } from "@/lib/format";
 import type { MemberMe } from "@/lib/types";
@@ -16,11 +16,11 @@ export function Avatar({
   const style = { width: size, height: size };
   return url ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={url} alt={name} style={style} className="rounded-2xl object-cover" />
+    <img src={url} alt={name} style={style} className="shrink-0 rounded-2xl object-cover" />
   ) : (
     <div
       style={{ ...style, fontSize: size / 2.8 }}
-      className="flex items-center justify-center rounded-2xl bg-purple-soft font-semibold text-purple"
+      className="flex shrink-0 items-center justify-center rounded-2xl bg-primary-100 font-semibold text-primary-700"
       aria-label={name}
     >
       {initials(name) || "?"}
@@ -30,95 +30,86 @@ export function Avatar({
 
 function Stat({ label, value, tone }: { label: string; value: string; tone?: "red" }) {
   return (
-    <div className="rounded-xl bg-surface px-4 py-3">
+    <div className="rounded-xl bg-gray-50 px-3.5 py-3">
       <p className="text-xs text-muted">{label}</p>
-      <p className={`mt-0.5 text-sm font-semibold ${tone === "red" ? "text-red-600" : "text-ink"}`}>
+      <p className={`mt-0.5 break-words text-sm font-semibold ${tone === "red" ? "text-red-600" : "text-ink"}`}>
         {value}
       </p>
     </div>
   );
 }
 
-function ComingSoon({ title, text, icon }: { title: string; text: string; icon: React.ReactNode }) {
-  return (
-    <div className="flex flex-col items-center rounded-2xl border border-dashed border-[#d9d4ee] bg-white/60 px-5 py-8 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-soft text-purple">
-        {icon}
-      </div>
-      <h3 className="mt-4 text-sm font-semibold text-ink">{title}</h3>
-      <p className="mt-1 max-w-[16rem] text-xs leading-relaxed text-muted">{text}</p>
-      <span className="mt-3">
-        <StatusPill tone="purple">Coming soon</StatusPill>
-      </span>
-    </div>
-  );
-}
+const PLANS = [
+  { title: "Diet plan", text: "Your trainer will share a personal meal plan here.", Icon: FoodIcon },
+  { title: "Workout plan", text: "Training programs from your trainer will appear here.", Icon: DumbbellIcon },
+  { title: "Progress", text: "Track your weight and measurements over time.", Icon: ChartIcon },
+];
 
-export default function OverviewTab({ me }: { me: MemberMe }) {
+export default function OverviewTab({ me, onOpenProfile }: { me: MemberMe; onOpenProfile: () => void }) {
   const p = me.profile;
   const due = p.currentDueAmount > 0;
+  // Photos are missing for almost every member, so nudge them to add one.
+  const missingPhoto = !p.photo;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <Card>
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-          <Avatar name={p.fullName} photo={p.photo} size={88} />
+        <div className="flex items-center gap-4">
+          <Avatar name={p.fullName} photo={p.photo} size={72} />
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="truncate text-xl font-semibold tracking-tight">{p.fullName}</h2>
-              <StatusPill tone="green">Active</StatusPill>
-            </div>
-            <p className="mt-1 text-sm text-muted">
-              Member ID <span className="font-mono font-medium text-ink">{p.memberId ?? "-"}</span>
-              {me.branch.name ? <> &middot; {me.branch.name}</> : null}
+            <h1 className="truncate text-xl font-semibold tracking-tight">{p.fullName}</h1>
+            <p className="mt-0.5 text-sm text-muted">
+              Member ID <span className="font-medium text-ink">{p.memberId ?? "-"}</span>
             </p>
+            <div className="mt-1.5">
+              <StatusPill tone="green">Active member</StatusPill>
+            </div>
           </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Stat label="Package" value={p.currentPackageName || "Monthly"} />
+        <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+          <Stat label="Package" value={p.currentPackageName || "-"} />
           <Stat label="Next payment" value={fmtDate(p.nextPaymentDate)} />
-          <Stat
-            label="Outstanding due"
-            value={due ? fmtMoney(p.currentDueAmount) : "No due"}
-            tone={due ? "red" : undefined}
-          />
+          <Stat label="Outstanding due" value={due ? fmtMoney(p.currentDueAmount) : "No due"} tone={due ? "red" : undefined} />
           <Stat label="Member since" value={fmtDate(p.joinedAt ?? p.membershipStartDate)} />
         </div>
       </Card>
 
+      {due ? (
+        <div className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3.5 text-sm text-red-700">
+          You have {fmtMoney(p.currentDueAmount)} due. Please pay at the front desk.
+        </div>
+      ) : null}
+
+      {missingPhoto ? (
+        <div className="flex flex-col gap-3 rounded-2xl border border-primary-200 bg-primary-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-primary-800">Add your profile photo</p>
+            <p className="mt-0.5 text-sm text-primary-700/80">
+              The gym does not have a photo of you yet. It only takes a minute.
+            </p>
+          </div>
+          <SecondaryButton size="sm" onClick={onOpenProfile} className="w-full sm:w-auto">
+            Go to profile
+          </SecondaryButton>
+        </div>
+      ) : null}
+
       <div>
-        <h3 className="mb-3 px-1 text-sm font-semibold text-ink">Your plans</h3>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ComingSoon
-            title="Diet plan"
-            text="Your trainer will share a personal meal plan here."
-            icon={
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M12 7c-1.5-2-5-2-6.5 1C4 11 5 16 8 19c1.5 1.4 2.5 1 4 .5 1.5.5 2.5.9 4-.5 3-3 4-8 2.5-11C17 5 13.5 5 12 7Z" />
-                <path d="M12 7c0-2 1-3.5 3-4" />
-              </svg>
-            }
-          />
-          <ComingSoon
-            title="Workout plan"
-            text="Training programs from your trainer will appear here."
-            icon={
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M6.5 6.5v11M17.5 6.5v11M3 9v6M21 9v6M6.5 12h11" />
-              </svg>
-            }
-          />
-          <ComingSoon
-            title="Progress"
-            text="Track your weight and measurements over time."
-            icon={
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M3 17l6-6 4 4 8-8" />
-                <path d="M15 7h6v6" />
-              </svg>
-            }
-          />
+        <h2 className="mb-2.5 px-1 text-sm font-semibold text-gray-700">Coming soon</h2>
+        <div className="space-y-2.5">
+          {PLANS.map(({ title, text, Icon }) => (
+            <div key={title} className="flex items-center gap-3.5 rounded-2xl border border-gray-100 bg-white p-3.5">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary">
+                <Icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold">{title}</p>
+                <p className="text-xs leading-relaxed text-muted">{text}</p>
+              </div>
+              <StatusPill tone="gray">Soon</StatusPill>
+            </div>
+          ))}
         </div>
       </div>
     </div>
