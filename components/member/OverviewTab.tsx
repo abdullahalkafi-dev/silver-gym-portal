@@ -1,4 +1,4 @@
-import { Card, ChartIcon, DumbbellIcon, FoodIcon, SecondaryButton, StatusPill } from "@/components/ui";
+import { Card, ChartIcon, ChevronRightIcon, FoodIcon, SecondaryButton, StatusPill } from "@/components/ui";
 import { photoUrl } from "@/lib/api";
 import { fmtDate, fmtMoney, initials } from "@/lib/format";
 import type { MemberMe } from "@/lib/types";
@@ -39,13 +39,15 @@ function Stat({ label, value, tone }: { label: string; value: string; tone?: "re
   );
 }
 
-const PLANS = [
-  { title: "Diet plan", text: "Your trainer will share a personal meal plan here.", Icon: FoodIcon },
-  { title: "Workout plan", text: "Training programs from your trainer will appear here.", Icon: DumbbellIcon },
-  { title: "Progress", text: "Track your weight and measurements over time.", Icon: ChartIcon },
-];
-
-export default function OverviewTab({ me, onOpenProfile }: { me: MemberMe; onOpenProfile: () => void }) {
+export default function OverviewTab({
+  me,
+  onOpenProfile,
+  onOpenPlans,
+}: {
+  me: MemberMe;
+  onOpenProfile: () => void;
+  onOpenPlans: () => void;
+}) {
   const p = me.profile;
   const due = p.currentDueAmount > 0;
   // Photos are missing for almost every member, so nudge them to add one.
@@ -95,21 +97,29 @@ export default function OverviewTab({ me, onOpenProfile }: { me: MemberMe; onOpe
         </div>
       ) : null}
 
-      <div>
-        <h2 className="mb-2.5 px-1 text-sm font-semibold text-gray-700">Coming soon</h2>
-        <div className="space-y-2.5">
-          {PLANS.map(({ title, text, Icon }) => (
-            <div key={title} className="flex items-center gap-3.5 rounded-2xl border border-gray-100 bg-white p-3.5">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary">
-                <Icon className="h-5 w-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold">{title}</p>
-                <p className="text-xs leading-relaxed text-muted">{text}</p>
-              </div>
-              <StatusPill tone="gray">Soon</StatusPill>
-            </div>
-          ))}
+      <div className="space-y-2.5">
+        <button
+          onClick={onOpenPlans}
+          className="flex w-full items-center gap-3.5 rounded-2xl border border-gray-100 bg-white p-3.5 text-left transition-colors active:bg-gray-50"
+        >
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary">
+            <FoodIcon className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold">Diet & workout plans</p>
+            <p className="text-xs leading-relaxed text-muted">Ask a trainer of your branch for a plan made for you.</p>
+          </div>
+          <ChevronRightIcon className="h-5 w-5 shrink-0 text-gray-400" />
+        </button>
+        <div className="flex items-center gap-3.5 rounded-2xl border border-gray-100 bg-white p-3.5">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary">
+            <ChartIcon className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold">Progress</p>
+            <p className="text-xs leading-relaxed text-muted">Track your weight and measurements over time.</p>
+          </div>
+          <StatusPill tone="gray">Soon</StatusPill>
         </div>
       </div>
     </div>

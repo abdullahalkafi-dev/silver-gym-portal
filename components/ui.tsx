@@ -340,6 +340,72 @@ export function StatusPill({
   );
 }
 
+/** Sticky header of an inner page: back arrow + title (+ optional action on the right). */
+export function SubPageHeader({
+  title,
+  subtitle,
+  onBack,
+  action,
+}: {
+  title: string;
+  subtitle?: string;
+  onBack: () => void;
+  action?: ReactNode;
+}) {
+  return (
+    <header className="sticky top-0 z-20 border-b border-gray-200 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur">
+      <div className="mx-auto flex max-w-3xl items-center gap-2 px-2 py-2 sm:px-4">
+        <button
+          onClick={onBack}
+          aria-label="Back"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-gray-700 transition-colors hover:bg-gray-100 active:bg-gray-200"
+        >
+          <ArrowLeftIcon className="h-5 w-5" />
+        </button>
+        <div className="min-w-0 flex-1 leading-tight">
+          <h1 className="truncate text-base font-semibold">{title}</h1>
+          {subtitle ? <p className="truncate text-xs text-muted">{subtitle}</p> : null}
+        </div>
+        {action}
+      </div>
+    </header>
+  );
+}
+
+export function FullPageSpinner() {
+  return (
+    <div className="flex min-h-dvh items-center justify-center text-primary">
+      <Spinner className="h-6 w-6" />
+    </div>
+  );
+}
+
+/** Small round choice button (topics, filters). */
+export function Chip({
+  active,
+  onClick,
+  children,
+}: {
+  active?: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-colors ${
+        active
+          ? "border-primary bg-primary text-white"
+          : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 active:bg-gray-100"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
 /* ─── Icons (24px, stroke) ─────────────────────────────────────────────────────── */
 
 type IconProps = { className?: string };
@@ -406,6 +472,26 @@ export const FoodIcon = icon(
   </>,
 );
 export const DumbbellIcon = icon(<path d="M6.5 6.5v11M17.5 6.5v11M3 9v6M21 9v6M6.5 12h11" />);
+export const ClipboardIcon = icon(
+  <>
+    <rect x="5" y="4" width="14" height="17" rx="2" />
+    <path d="M9 4h6v3H9zM9 12h6M9 16h4" />
+  </>,
+);
+export const PlusIcon = icon(<path d="M12 5v14M5 12h14" />);
+export const SearchIcon = icon(
+  <>
+    <circle cx="11" cy="11" r="6.5" />
+    <path d="m20 20-4.2-4.2" />
+  </>,
+);
+export const ChevronRightIcon = icon(<path d="m9 6 6 6-6 6" />);
+export const FileTextIcon = icon(
+  <>
+    <path d="M6 3h8l4 4v14H6V3Z" />
+    <path d="M14 3v4h4M9 12h6M9 16h6" />
+  </>,
+);
 export const ChartIcon = icon(
   <>
     <path d="M3 17l6-6 4 4 8-8" />

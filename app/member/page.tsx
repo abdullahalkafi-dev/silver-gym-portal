@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 
 import BillingTab from "@/components/member/BillingTab";
 import OverviewTab from "@/components/member/OverviewTab";
+import PlansTab from "@/components/member/PlansTab";
 import ProfileTab from "@/components/member/ProfileTab";
 import {
+  ClipboardIcon,
   HomeIcon,
   Logo,
   LogoutIcon,
@@ -18,13 +20,16 @@ import {
 import { ApiError, api, session } from "@/lib/api";
 import type { MemberMe, Payment, UpdateRequestState } from "@/lib/types";
 
-type TabKey = "overview" | "billing" | "profile";
+type TabKey = "overview" | "plans" | "billing" | "profile";
 
 const TABS: { key: TabKey; label: string; Icon: typeof HomeIcon }[] = [
   { key: "overview", label: "Home", Icon: HomeIcon },
+  { key: "plans", label: "Plans", Icon: ClipboardIcon },
   { key: "billing", label: "Billing", Icon: ReceiptIcon },
   { key: "profile", label: "Profile", Icon: UserIcon },
 ];
+
+const isTab = (value: string | null): value is TabKey => TABS.some((t) => t.key === value);
 
 export default function MemberPage() {
   const router = useRouter();
@@ -45,6 +50,10 @@ export default function MemberPage() {
       router.replace("/");
       return;
     }
+
+    // Coming back from an inner page (e.g. /member?tab=plans) opens the same tab.
+    const fromUrl = new URLSearchParams(window.location.search).get("tab");
+    if (isTab(fromUrl)) setTab(fromUrl);
 
     (async () => {
       try {
@@ -72,6 +81,7 @@ export default function MemberPage() {
 
   const goTo = (next: TabKey) => {
     setTab(next);
+    window.history.replaceState(null, "", next === "overview" ? "/member" : `/member?tab=${next}`);
     window.scrollTo({ top: 0 });
   };
 
@@ -142,7 +152,10 @@ export default function MemberPage() {
       </header>
 
       <div className="fade-up mx-auto max-w-4xl px-4 pb-32 pt-4 md:pb-12 md:pt-6" key={tab}>
-        {tab === "overview" ? <OverviewTab me={me} onOpenProfile={() => goTo("profile")} /> : null}
+        {tab === "overview" ? (
+          <OverviewTab me={me} onOpenProfile={() => goTo("profile")} onOpenPlans={() => goTo("plans")} />
+        ) : null}
+        {tab === "plans" ? <PlansTab /> : null}
         {tab === "billing" ? <BillingTab me={me} payments={payments} /> : null}
         {tab === "profile" ? (
           <ProfileTab me={me} request={request} onRequestChanged={refreshRequest} />
@@ -154,7 +167,7 @@ export default function MemberPage() {
         aria-label="Sections"
         className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
       >
-        <div className="grid grid-cols-3">
+        <div className="grid grid-cols-4">
           {TABS.map(({ key, label, Icon }) => (
             <button
               key={key}

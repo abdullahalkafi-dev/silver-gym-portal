@@ -41,14 +41,31 @@ export const session = {
 };
 
 type Options = {
-  method?: "GET" | "POST" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
   form?: FormData;
   auth?: boolean;
 };
 
+export type PageMeta = { page: number; limit: number; total: number; totalPage: number };
+
 /** Calls the portal API and returns `data` from the standard `{ success, message, data }` envelope. */
 export async function api<T>(path: string, options: Options = {}): Promise<T> {
+  const json = await request(path, options);
+  return json?.data as T;
+}
+
+/** Same as `api`, plus the paging `meta` of list endpoints. */
+export async function apiPage<T>(path: string, options: Options = {}): Promise<{ data: T; meta: PageMeta }> {
+  const json = await request(path, options);
+  return {
+    data: json?.data as T,
+    meta: json?.meta ?? { page: 1, limit: 20, total: 0, totalPage: 1 },
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function request(path: string, options: Options): Promise<any> {
   const headers: Record<string, string> = { Accept: "application/json" };
   const stored = session.get();
   if (options.auth !== false && stored) {
@@ -90,7 +107,7 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
     throw new ApiError(message, response.status);
   }
 
-  return json?.data as T;
+  return json;
 }
 
 const MINIO = process.env.NEXT_PUBLIC_MINIO_URL || "";

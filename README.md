@@ -6,7 +6,28 @@ Member and trainer portal for Silver GYM, live at https://portal.silvergym-bd.co
   billing history, download receipts, and send profile-update **requests**. A request never changes the
   member until staff approve it in the dashboard. The phone number is read-only.
 - **Trainers** sign in with the username and password staff create on the dashboard's Trainers page.
-  Their page is an "under construction" placeholder for now.
+- **Ask a trainer (diet / workout plans).** A member picks an active trainer of their own branch, a topic
+  (or their own title), writes about their health, and sends. Their body details go with it. The trainer
+  answers with a formatted plan, starting from one of their **private templates** or from scratch, and can
+  edit it later. One request gets one answer (not a chat), one waiting request per member, the member can
+  cancel but not edit, and the trainer can decline with a reason. Owner/staff see it read-only on the
+  dashboard Trainers page. Full rules, data and API: `docs/trainer-plans.md` in the backend repo.
+  Voice notes are the planned next phase.
+
+## Pages
+
+| Path | Who | What |
+|---|---|---|
+| `/member` (`?tab=plans`) | member | Home, **Plans**, Billing, Profile tabs |
+| `/member/ask` | member | Ask a trainer form |
+| `/member/plan/[id]` | member | Read a plan / see request status |
+| `/trainer` | trainer | Requests inbox (status chips, topic filter, search) |
+| `/trainer/request/[id]` | trainer | Member details + reply editor ("Use a template", "Save as a new template", decline) |
+| `/trainer/templates`, `/trainer/templates/[id]` | trainer | Private templates (`new` creates one) |
+
+The editor is Tiptap (`components/RichTextEditor.tsx`), limited to headings, bold, italic, underline,
+lists and undo/redo. The backend cleans every plan to those tags, so `components/PlanContent.tsx` can render
+it directly. Shared look for the editor and the reader: `.plan-content` in `app/globals.css`.
 
 This app has **no database of its own**. It only calls the SilverGym backend API (`/api/v1/portal/...`),
 which lives in the `silver-gym` repo (backend) and is scoped to one account by `PORTAL_BUSINESS_ID`.

@@ -77,3 +77,58 @@ export type UpdateRequestState = {
   pending: UpdateRequest | null;
   latest: UpdateRequest | null;
 };
+
+/* ─── Ask a trainer ─────────────────────────────────────────────────────────── */
+
+export type PlanStatus = "pending" | "answered" | "declined" | "cancelled";
+
+export type TrainerOption = { id: string; displayName: string };
+
+export type MemberSnapshot = {
+  fullName?: string;
+  memberId?: string;
+  photo?: string;
+  gender?: string;
+  age?: number;
+  bloodGroup?: string;
+  height?: number;
+  heightUnit?: string;
+  weight?: number;
+  weightUnit?: string;
+  trainingGoals?: string[];
+};
+
+export type PlanReply = {
+  title?: string;
+  /** HTML cleaned by the server (formatting tags only). */
+  content: string;
+  sentAt: string;
+  editedAt?: string;
+};
+
+export type PlanRequest = {
+  _id: string;
+  trainerName?: string;
+  topic: string;
+  isCustomTopic?: boolean;
+  note?: string;
+  memberSnapshot: MemberSnapshot;
+  status: PlanStatus;
+  reply?: PlanReply;
+  declineReason?: string;
+  closedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PlanCounts = Record<PlanStatus | "total", number>;
+
+export type TrainerInbox = { items: PlanRequest[]; counts: PlanCounts };
+
+export type PlanTemplate = {
+  _id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+};
